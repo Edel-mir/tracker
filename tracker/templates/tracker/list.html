@@ -1,0 +1,55 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %}
+
+
+{% block content %} 
+{% regroup expences by date as  list %}
+<div class='px-8 w-full flex gap-3'>
+  <div class='w-1/2 pt-8 flex flex-col gap-3 grow'>
+    {% if list %}
+      {%for date, e_list in list %}
+        <h2 class='font-medium text-lg mt-5 first:mt-0'>
+          {% now 'd F Y' as today %}
+          {% if today == date|date:'d F Y' %}
+            Сегодня
+          {% else %} 
+            {{date|date:'d F Y'}}
+          {% endif %} 
+        </h2>
+        {% for e in e_list %}
+          <div class='flex items-center rounded rounded-xl shadow-md mr-8 '>
+            <span 
+              {% if e.type == 'Доход' %} class='py-3 px-6 bg-green-500 rounded-l-xl text-white '
+              {% else %}class='py-3 rounded-l-xl px-6 bg-red-500 text-white'{% endif %}>
+              {{ e.type }} 
+            </span>
+            <span class='py-3 px-6 bg-blue-500 text-white'>{{e.tag}}</span>
+            <span class='py-3 px-6'> {{e.amount}} </span>
+            <span class='grow text-center mr-4'>{{e.description}}</span>
+          </div>
+        {% endfor %}
+    {% endfor %}
+    {%else%}
+      <h2>Нет информации</h2>
+    {% endif %}
+  </div>
+
+  <div class='w-2/5 pt-4 h-full shadow-lg px-10 dark:bg-neutral-900 dark:text-white'>
+    <form class='h-screen text-inherit mt-5' method='post'>
+      {% csrf_token %}
+      <div class='flex flex-col rounded-md shadow-sm -space-y-px gap-5'>
+        <div>
+          {{ forms.expence|crispy }}
+        </div>
+        <div>
+          <input 
+            type="submit" 
+            placeholder='Создать'
+            value='Создать'
+            class='shadow appearance-none focus:appearance-none bg-inherit border rounded w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{%endblock%}

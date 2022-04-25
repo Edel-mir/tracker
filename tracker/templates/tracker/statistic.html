@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="p-8 w-full flex  gap-3">
+  <div class="w-1/2 h-full">
+    <canvas
+    id="dayChart"
+    class="text-neutral-900">
+  </canvas>
+  </div>
+  <div class="w-1/2 h-full">
+    <canvas
+      id='monthChart'
+      class='text-neutral-900'>
+  </canvas>
+  </div>
+</div>
+{% endblock %} 
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+var bgColors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
+var dayConfig = {
+  type: 'pie',
+  data: {
+    labels: {{ dayLabels|safe}},
+    datasets: [{
+      data: {{ dayData|safe }},
+      backgroundColor: bgColors,
+      color: ['neutral-900'],
+    }],
+  },
+  options: {
+    legend: {
+      display: null,
+    },
+    title: {
+      display: true,
+      text: 'Расходы за день'
+    },
+    responsive: true,
+  }
+};
+
+var monthConfig = {
+  type: 'pie',
+  data: {
+    labels: {{ monthLabels|safe}},
+    datasets: [{
+      data: {{ monthData|safe }},
+      backgroundColor: bgColors,
+      color: ['neutral-900'],
+    }],
+  },
+  options: {
+    legend: {
+      display: null,
+    },
+    title: {
+      display: true,
+      text: 'Расходы за месяц'
+    },
+    responsive: true,
+  }
+};
+
+window.onload = function() {
+  var dayCtx = document.getElementById('dayChart').getContext('2d')
+  window.dayPie = new Chart(dayCtx, dayConfig)
+  
+  var monthCtx = document.getElementById('monthChart').getContext('2d')
+  window.monthPie = new Chart(monthCtx, monthConfig)
+};
+</script>
+{% endblock scripts %}
