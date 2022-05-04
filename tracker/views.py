@@ -1,15 +1,13 @@
-import profile
 from django.shortcuts import redirect, render
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 
 from django.views import View as BaseView
 from .models import Expense, Profile, Tag
-from .forms import NewExpenseForm, NewTagForm, NewUserForm
+from .forms import NewUserForm
 
 
 class ExpenseListCreateView(BaseView):
