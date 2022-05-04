@@ -58,6 +58,5 @@ class NewExpenseForm(forms.ModelForm):
 
     def __init__(self, current_user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(self.fields['tag'])
         self.fields['tag'].queryset = self.fields['tag'].queryset.filter(
             user=current_user)

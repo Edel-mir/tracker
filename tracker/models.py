@@ -4,13 +4,6 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-STANDART_TAGS = [
-    ('Еда', 'Еда'),
-    ('Путешествия', 'Путешествия'),
-    ('Покупки', 'Покупки'),
-    ('Необходимое', 'Необходимое'),
-    ('Развлечения', 'Развлечения'),
-]
 
 EXPENSE_TYPES = [
     ('Расход', 'Расход'),
@@ -50,7 +43,8 @@ class Expense(models.Model):
     type = models.CharField(
         verbose_name='Тип', choices=EXPENSE_TYPES, max_length=12)
     amount = models.PositiveIntegerField(verbose_name='Количество')
-    tag = models.ForeignKey(Tag, verbose_name='Теги', on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, verbose_name='Теги',
+                            on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateField(verbose_name='Дата', default=now)
     description = models.CharField(
         verbose_name='Описание', max_length=200, blank=True)

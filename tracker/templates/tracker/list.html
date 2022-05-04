@@ -3,53 +3,127 @@
 
 
 {% block content %} 
-{% regroup expences by date as  list %}
+{% regroup all_exp by date as  list %}
 <div class='px-8 w-full flex gap-3'>
-  <div class='w-1/2 pt-8 flex flex-col gap-3 grow'>
-    {% if list %}
+  <div class='w-3/5 pt-8 flex flex-col gap-3 overflow-auto'>
+      {% if list %}
       {%for date, e_list in list %}
-        <h2 class='font-medium text-lg mt-5 first:mt-0'>
-          {% now 'd F Y' as today %}
-          {% if today == date|date:'d F Y' %}
-            Сегодня
-          {% else %} 
-            {{date|date:'d F Y'}}
-          {% endif %} 
-        </h2>
+      <h2 class='font-medium text-lg mt-5 first:mt-0'>
+        {% now 'd F Y' as today %}
+        {% if today == date|date:'d F Y' %}
+        Сегодня
+        {% else %} 
+        {{date|date:'d F Y'}}
+        {% endif %} 
+      </h2>
         {% for e in e_list %}
-          <div class='flex items-center rounded rounded-xl shadow-md mr-8 '>
+
+        <div>
+
+          <div class='flex items-center rounded rounded-xl shadow-md mr-8 dark:bg-neutral-800'>
             <span 
-              {% if e.type == 'Доход' %} class='py-3 px-6 bg-green-500 rounded-l-xl text-white '
-              {% else %}class='py-3 rounded-l-xl px-6 bg-red-500 text-white'{% endif %}>
-              {{ e.type }} 
-            </span>
-            <span class='py-3 px-6 bg-blue-500 text-white'>{{e.tag}}</span>
-            <span class='py-3 px-6'> {{e.amount}} </span>
-            <span class='grow text-center mr-4'>{{e.description}}</span>
+            {% if e.type == 'Доход' %} class='py-3 w-24 text-center bg-green-500 rounded-l-xl text-white '
+            {% else %}class='py-3 rounded-l-xl w-24 text-center bg-red-500 text-white'{% endif %}>
+            {{ e.type }} 
+          </span>
+          <span class='h-full py-3 align-center w-24 text-center bg-blue-500 text-white'>
+            {% if e.tag == None %}
+              Нет
+            {% else %}
+              {{e.tag}}
+            {% endif %}
+          </span>
+          <span class='py-3 text-center w-24 border-r border-neutral-800 dark:border-neutral-500'> {{e.amount}} </span>
+          <span class='grow text-center mr-4'>{{e.description}}</span>            
+            
+          <div class='flex gap-4 mr-3 justify-self-end justify-between'>
+            <a href="{% url 'deletePage' e.id %}">
+              <svg 
+                class="flex w-4 dark:fill-neutral-300"
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 448 512">
+                  <path 
+                    d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/>
+              </svg>
+            </a>
           </div>
+          </div>
+        </div>
         {% endfor %}
-    {% endfor %}
+        {% endfor %}
     {%else%}
       <h2>Нет информации</h2>
-    {% endif %}
-  </div>
+      {% endif %}
+    </div>
 
-  <div class='w-2/5 pt-4 h-full shadow-lg px-10 dark:bg-neutral-900 dark:text-white'>
-    <form class='h-screen text-inherit mt-5' method='post'>
+    {% comment %} <div class='w-2/5 pt-4 h-full shadow-lg px-10 dark:bg-neutral-900 dark:text-white'> {% endcomment %}
+    <form id='addForm' class='h-screen text-inherit flex flex-col gap-5 fixed top-5 bottom-0 right-5' method='post'>
       {% csrf_token %}
-      <div class='flex flex-col rounded-md shadow-sm -space-y-px gap-5'>
         <div>
-          {{ forms.expence|crispy }}
+          <label for="type">Выберите тип</label>
+          <select 
+            id='type' 
+            required
+            name='type' 
+            class='shadow appearance-none focus:appearance-none bg-neutral-100 dark:bg-neutral-900 border rounded
+            w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+            <option value="Расход">Расход</option>
+            <option value="Доход">Доход</option>
+          </select>
+        </div>
+        <div>
+          <label for="tag">Выберите тег или создайте новый</label>
+          <input 
+          type="text" 
+          id='tag' 
+          list='tagList'
+          name='tag' 
+          class='shadow appearance-none focus:appearance-none bg-neutral-100 dark:bg-neutral-900 border rounded
+          w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+          
+          <datalist id='tagList'>
+            {% for tag in all_tag %}
+            <option value="{{ tag.name }}">
+              {% endfor %}
+            </datalist>
+          </div>
+          <div>
+          <label for="amount">Введите количество денег</label>
+          <input 
+          required
+          type="number" 
+          name="amount" 
+          id="amount" 
+          class='shadow appearance-none focus:appearance-none bg-neutral-100 dark:bg-neutral-900 border rounded
+          w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+        </div>
+        <div>
+          <label for="date">Выберите дату</label>
+          <input 
+            required 
+            type="date" 
+            name="date" 
+            id="date"
+            class=' shadow appearance-none focus:appearance-none bg-neutral-100 dark:bg-neutral-900 border rounded
+            w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+          </div>
+          <div>
+          <label for="description">Введите описание (опционально)</label>
+          <input 
+          type="text"
+          id='description'
+          name='description'
+          class='shadow appearance-none focus:appearance-none bg-neutral-100 dark:bg-neutral-900 border rounded
+          w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
         </div>
         <div>
           <input 
-            type="submit" 
-            placeholder='Создать'
-            value='Создать'
-            class='shadow appearance-none focus:appearance-none bg-inherit border rounded w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
+          type="submit" 
+          placeholder='Создать'
+          value='Создать'
+          class='shadow appearance-none focus:appearance-none bg-inherit border rounded w-full py-2 px-3 text-neutral-900 dark:text-white hover:cursor-pointer leading-tight focus:outline-none focus:shadow-outline'>
         </div>
-      </div>
-    </form>
-  </div>
+      </form>
+  {% comment %} </div> {% endcomment %}
 </div>
 {%endblock%}

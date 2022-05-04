@@ -1,22 +1,29 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-<div class="p-8 w-full flex  gap-3">
-  <div class="w-1/2 h-full">
-    <canvas
-    id="dayChart"
-    class="text-neutral-900">
-  </canvas>
+<div class="p-8 w-full h-full flex flex-col ">
+  <div class='w-full flex justify-around mb-6'>
+    <p class='uppercase text-lg'> Доходы: <span class='ml-2 text-green-600'>{{profile.income}}</span></p>
+    <p class='uppercase text-lg'> Расходы: <span class='ml-2 text-red-600'>{{profile.outcome}}</span></p>
   </div>
-  <div class="w-1/2 h-full">
-    <canvas
-      id='monthChart'
-      class='text-neutral-900'>
-  </canvas>
+  <div class='flex gap-3'>
+    <div class="w-1/2 h-full">
+      <canvas
+        id="dayChart"
+        class="text-neutral-900">
+    </canvas>
+    </div>
+    <div class="w-1/2 h-full">
+      <canvas
+        id='monthChart'
+        class='text-neutral-900'>
+      </canvas>
+    </div>
   </div>
 </div>
 {% endblock %} 
+
+
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
@@ -71,6 +78,14 @@ window.onload = function() {
   
   var monthCtx = document.getElementById('monthChart').getContext('2d')
   window.monthPie = new Chart(monthCtx, monthConfig)
-};
+
+  const theme = localStorage.getItem('theme')
+  if (theme !== null) {
+    setTheme()
+  } else {
+    localStorage.setItem('theme', 'light')
+  }
+  console.log('from html')
+}
 </script>
 {% endblock scripts %}
