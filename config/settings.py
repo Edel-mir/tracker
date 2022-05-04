@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-
+    
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)rggs(r02n(!$i6&h_0fw%ri#6s694ybodf$i7b^amq39md4q('
 DEBUG = True

@@ -6,12 +6,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 
+from django.views import View
 from .models import Expense, Tag
 from .forms import NewExpenseForm, NewTagForm, NewUserForm
 
 
 @login_required
-def listPage(request, expenses=None):
+def listPage(request, pk=None):
     if request.method == 'POST':
         user = User.objects.get(username=request.user)
         form = NewExpenseForm(user, request.POST)
