@@ -41,7 +41,6 @@ INSTALLED_APPS = [
 ]
 
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'assets'), ]
 
 
 MIDDLEWARE = [
